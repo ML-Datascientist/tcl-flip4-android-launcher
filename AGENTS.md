@@ -48,6 +48,39 @@ person's laptop.
   settle time after the triggering input, or cross-check
   `dumpsys window | grep mCurrentFocus` for the foregrounded Activity.
 
+### Soft-key hardware mapping
+
+The target device family (TCL T440W; input device `soc:matrix_keypad0`) never
+emits Android `KEYCODE_SOFT_LEFT`/`KEYCODE_SOFT_RIGHT` (1/2) — nor MENU or
+BACK, despite what the kernel event names suggest. Its key layout is
+`/odm/usr/keylayout/soc_matrix_keypad0.kl` (ODM partition, root-only — not
+readable over adb), and it maps the soft keys to the function-key codes:
+
+| Physical key   | Kernel event        | Android code the app receives |
+|----------------|---------------------|-------------------------------|
+| Left soft key  | `KEY_MENU` (scan 22)| **131 `KEYCODE_F1`**          |
+| Right soft key | `KEY_BACK` (scan 20)| **132 `KEYCODE_F2`**          |
+| OK (center)    | `KEY_OK`            | 23 `DPAD_CENTER`              |
+| Call key       | `KEY_SEND`          | 5 `KEYCODE_CALL`              |
+
+So screens must treat **F1 as the left soft key** and **F2 as the right soft
+key** (plus BACK where a right action is defined, for devices/emulators that
+emit it). `util/SoftKeys.kt` defines the canonical code sets
+(`LEFT_SOFT_KEYS`, `RIGHT_SOFT_KEYS`); SOFT_LEFT/SOFT_RIGHT are kept as
+aliases. Careful: `KEYCODE_BREAK` is 121 and `KEYCODE_NUM` is 78 — do NOT
+guess key-code values from memory; check them against the SDK
+(`javap -constants` on `android.view.KeyEvent` in the platform jar).
+
+To re-verify on a connected phone, never inject keys. Run both monitors, then
+have the owner press one key at a time (~2 s apart) and correlate timestamps:
+
+```
+adb shell getevent -lt /dev/input/eventN   # matrix keypad; find N via getevent -pl
+adb logcat                                  # correlate with the owner's presses
+```
+(there are no key-logging hooks in the repo; temporarily add a `dispatchKeyEvent`
+`Log.d("FlipKeys", ...)` override to the Activities if app-side visibility is needed.)
+
 ## Project structure
 
 `app/src/main/java/com/flipos/launcher/` is split into sibling packages:

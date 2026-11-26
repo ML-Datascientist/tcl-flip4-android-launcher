@@ -11,6 +11,7 @@ import com.flipos.launcher.data.IconPackRepository
 import com.flipos.launcher.data.LauncherPrefs
 import com.flipos.launcher.ui.ListRowAdapter
 import com.flipos.launcher.ui.Row
+import com.flipos.launcher.util.LEFT_SOFT_KEYS
 
 /** Appearance settings: wallpaper, accent color, and icon look. */
 class AppearanceSettingsActivity : BaseListActivity() {
@@ -176,7 +177,7 @@ class AppearanceSettingsActivity : BaseListActivity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_SOFT_LEFT) {
+        if (keyCode in LEFT_SOFT_KEYS) {
             finish()
             return true
         }

@@ -9,6 +9,7 @@ import android.view.KeyEvent
 import android.widget.Toast
 import com.flipos.launcher.ui.ListRowAdapter
 import com.flipos.launcher.ui.Row
+import com.flipos.launcher.util.LEFT_SOFT_KEYS
 
 /**
  * The launcher's single, unified settings hub, reached from the Home screen
@@ -93,7 +94,7 @@ class SettingsActivity : BaseListActivity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_SOFT_LEFT) {
+        if (keyCode in LEFT_SOFT_KEYS) {
             finish()
             return true
         }

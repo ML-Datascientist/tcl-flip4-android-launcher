@@ -10,6 +10,7 @@ import com.flipos.launcher.data.AppRepository
 import com.flipos.launcher.ui.ListRowAdapter
 import com.flipos.launcher.ui.Row
 import com.flipos.launcher.util.BackgroundLoader
+import com.flipos.launcher.util.LEFT_SOFT_KEYS
 
 /**
  * Lists the launchable, exported activities of a single app so the user can pin
@@ -71,7 +72,7 @@ class ActivityPickerActivity : BaseListActivity() {
     private fun shortClassName(name: String) = name.substringAfterLast('.')
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_SOFT_LEFT) {
+        if (keyCode in LEFT_SOFT_KEYS) {
             finish()
             return true
         }

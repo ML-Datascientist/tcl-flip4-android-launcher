@@ -16,7 +16,6 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -30,6 +29,8 @@ import com.flipos.launcher.data.NotificationCounts
 import com.flipos.launcher.ui.HomeRailAdapter
 import com.flipos.launcher.ui.RailItem
 import com.flipos.launcher.util.BackgroundLoader
+import com.flipos.launcher.util.LEFT_SOFT_KEYS
+import com.flipos.launcher.util.RIGHT_SOFT_KEYS
 import com.flipos.launcher.util.accentColorAlpha
 import com.flipos.launcher.util.launchAppByKey
 import java.text.SimpleDateFormat
@@ -74,8 +75,8 @@ class MainActivity : AppCompatActivity() {
     /** Rail index awaiting an app from the picker (-1 = none). */
     private var pendingIndex = -1
 
-    /** Set once a Back long-press has fired, so the matching key-up doesn't also open the drawer. */
-    private var backLongPressHandled = false
+    /** One-shot guard so a held long-press fires its app launch once, not once per auto-repeat. */
+    private var backLongPressFired = false
 
     /** The accent color applied this onCreate, so [onResume] can detect a change and [recreate]. */
     private var appliedAccentColor: LauncherPrefs.AccentColor? = null
@@ -185,12 +186,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
-        // Back opens the app drawer; long-pressing it launches the configured app instead
-        // (see onKeyDown/onKeyUp, which suppress this callback when a long-press fires).
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() = openAppDrawer()
-        })
 
         updateClock()
     }
@@ -417,21 +412,33 @@ class MainActivity : AppCompatActivity() {
             in KeyEvent.KEYCODE_0..KeyEvent.KEYCODE_9,
             KeyEvent.KEYCODE_STAR,
             KeyEvent.KEYCODE_POUND -> return true
-            KeyEvent.KEYCODE_SOFT_LEFT -> { openLeftKeyApp(); return true }
-            KeyEvent.KEYCODE_SOFT_RIGHT -> { openRightKeyApp(); return true }
+            // The phone's LEFT soft key arrives as KEYCODE_F1 and its RIGHT
+            // one as KEYCODE_F2; see util/SoftKeys.kt. Both drive the action
+            // labeled on the bottom bar, once per press (auto-repeat while
+            // held is eaten).
             KeyEvent.KEYCODE_MENU -> { openAppDrawer(); return true }
-            KeyEvent.KEYCODE_CALL -> { openDialer(); return true }
-            KeyEvent.KEYCODE_BACK -> {
-                // Track the initial press so the framework marks the follow-up
-                // repeat as a long-press; without this, isLongPress never fires
-                // reliably on some devices.
+            in LEFT_SOFT_KEYS -> {
+                if (event.repeatCount == 0) openLeftKeyApp()
+                return true
+            }
+            in RIGHT_SOFT_KEYS -> {
+                // Short press = right bar action. Long-pressing the Back key
+                // launches its separately configured app instead; tracking the
+                // initial press lets the framework mark the follow-up repeat as
+                // a long-press. Consuming every Down also suppresses any
+                // framework back dispatch from Home.
                 if (event.repeatCount == 0) event.startTracking()
                 if (event.isLongPress) {
-                    backLongPressHandled = true
-                    launchBackLongPressApp()
-                    return true
+                    if (!backLongPressFired) {
+                        backLongPressFired = true
+                        launchBackLongPressApp()
+                    }
+                } else if (event.repeatCount == 0) {
+                    openRightKeyApp()
                 }
+                return true
             }
+            KeyEvent.KEYCODE_CALL -> { openDialer(); return true }
         }
         return super.onKeyDown(keyCode, event)
     }
@@ -448,11 +455,10 @@ class MainActivity : AppCompatActivity() {
             KeyEvent.KEYCODE_STAR -> { startDial("*"); return true }
             KeyEvent.KEYCODE_POUND -> { startDial("#"); return true }
         }
-        // Swallow the key-up that follows a handled long-press so the
-        // OnBackPressedCallback above doesn't also open the app drawer.
-        if (keyCode == KeyEvent.KEYCODE_BACK && backLongPressHandled) {
-            backLongPressHandled = false
-            return true
+        // Re-arm the long-press one-shot guard on release. The key-down above
+        // consumes every Back/SOFT_RIGHT Down, so no back dispatch can follow.
+        if (keyCode in RIGHT_SOFT_KEYS) {
+            backLongPressFired = false
         }
         return super.onKeyUp(keyCode, event)
     }

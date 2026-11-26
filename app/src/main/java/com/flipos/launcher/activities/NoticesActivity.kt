@@ -14,6 +14,7 @@ import com.flipos.launcher.data.NoticeItem
 import com.flipos.launcher.data.NotificationStore
 import com.flipos.launcher.service.NotificationCountService
 import com.flipos.launcher.ui.NoticeRowAdapter
+import com.flipos.launcher.util.LEFT_SOFT_KEYS
 
 /**
  * A KaiOS-style "Notices" list standing in for the system notification shade,
@@ -132,7 +133,7 @@ class NoticesActivity : BaseListActivity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_SOFT_LEFT) {
+        if (keyCode in LEFT_SOFT_KEYS) {
             dismissFocused()
             return true
         }

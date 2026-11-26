@@ -26,6 +26,8 @@ import com.flipos.launcher.ui.PageIndicatorView
 import com.flipos.launcher.ui.Row
 import com.flipos.launcher.ui.SoftKeyBar
 import com.flipos.launcher.util.BackgroundLoader
+import com.flipos.launcher.util.LEFT_SOFT_KEYS
+import com.flipos.launcher.util.RIGHT_SOFT_KEYS
 import com.flipos.launcher.util.launchAppByKey
 import kotlin.math.ceil
 import kotlin.math.min
@@ -459,15 +461,18 @@ class AppDrawerActivity : AppCompatActivity() {
             // stopping at a row edge; the list has no columns to move between.
             KeyEvent.KEYCODE_DPAD_RIGHT -> { if (!listMode) { moveFocusByColumn(step); return true } }
             KeyEvent.KEYCODE_DPAD_LEFT -> { if (!listMode) { moveFocusByColumn(-step); return true } }
-            KeyEvent.KEYCODE_SOFT_LEFT -> { finish(); return true }
-            KeyEvent.KEYCODE_SOFT_RIGHT, KeyEvent.KEYCODE_MENU -> { optionsForFocused(); return true }
+            // The phone's LEFT soft key arrives as KEYCODE_F1 and its RIGHT
+            // one as KEYCODE_F2; see util/SoftKeys.kt. MENU stays the options
+            // key for keyboards/emitters that send it.
+            in LEFT_SOFT_KEYS -> { finish(); return true }
+            KeyEvent.KEYCODE_MENU, in RIGHT_SOFT_KEYS -> { optionsForFocused(); return true }
         }
         return super.onKeyDown(keyCode, event)
     }
 
     private fun isRepeatGuardedKey(keyCode: Int): Boolean = when (keyCode) {
         in KeyEvent.KEYCODE_1..KeyEvent.KEYCODE_9,
-        KeyEvent.KEYCODE_SOFT_LEFT, KeyEvent.KEYCODE_SOFT_RIGHT, KeyEvent.KEYCODE_MENU -> true
+        KeyEvent.KEYCODE_MENU, in LEFT_SOFT_KEYS, in RIGHT_SOFT_KEYS -> true
         else -> false
     }
 

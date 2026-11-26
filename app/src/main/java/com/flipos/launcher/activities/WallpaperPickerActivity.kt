@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import com.flipos.launcher.data.BuiltInWallpapers
 import com.flipos.launcher.ui.WallpaperGridAdapter
+import com.flipos.launcher.util.LEFT_SOFT_KEYS
 
 /** Lets the user set the device wallpaper from the launcher's bundled set, pulled
  * straight from [BuiltInWallpapers] — no need to leave the launcher for Photos. */
@@ -94,7 +95,7 @@ class WallpaperPickerActivity : BaseListActivity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_SOFT_LEFT) {
+        if (keyCode in LEFT_SOFT_KEYS) {
             finish()
             return true
         }

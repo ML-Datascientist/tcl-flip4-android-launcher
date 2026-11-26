@@ -12,6 +12,8 @@ import com.flipos.launcher.data.LauncherPrefs
 import com.flipos.launcher.ui.ListRowAdapter
 import com.flipos.launcher.ui.Row
 import com.flipos.launcher.util.BackgroundLoader
+import com.flipos.launcher.util.LEFT_SOFT_KEYS
+import com.flipos.launcher.util.RIGHT_SOFT_KEYS
 
 /**
  * Customizes the ordered list of home shortcuts. Selecting a shortcut row (or
@@ -127,8 +129,8 @@ class ShortcutConfigActivity : BaseListActivity() {
                 if (index <= shortcuts.size && index < LauncherPrefs.MAX_SHORTCUTS) onRowClick(index)
                 return true
             }
-            KeyEvent.KEYCODE_SOFT_LEFT -> { finish(); return true }
-            KeyEvent.KEYCODE_SOFT_RIGHT -> { clearAt(focusedPosition()); return true }
+            in LEFT_SOFT_KEYS -> { finish(); return true }
+            in RIGHT_SOFT_KEYS -> { clearAt(focusedPosition()); return true }
         }
         return super.onKeyDown(keyCode, event)
     }

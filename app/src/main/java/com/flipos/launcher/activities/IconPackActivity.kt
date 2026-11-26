@@ -11,6 +11,7 @@ import com.flipos.launcher.data.LauncherPrefs
 import com.flipos.launcher.ui.ListRowAdapter
 import com.flipos.launcher.ui.Row
 import com.flipos.launcher.util.BackgroundLoader
+import com.flipos.launcher.util.LEFT_SOFT_KEYS
 
 /**
  * Lists icon pack apps detected on the device (anything declaring the standard
@@ -88,7 +89,7 @@ class IconPackActivity : BaseListActivity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_SOFT_LEFT) {
+        if (keyCode in LEFT_SOFT_KEYS) {
             finish()
             return true
         }

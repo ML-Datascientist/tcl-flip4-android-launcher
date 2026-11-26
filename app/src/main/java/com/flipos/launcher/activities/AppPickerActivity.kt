@@ -11,6 +11,8 @@ import com.flipos.launcher.data.AppRepository
 import com.flipos.launcher.ui.ListRowAdapter
 import com.flipos.launcher.ui.Row
 import com.flipos.launcher.util.BackgroundLoader
+import com.flipos.launcher.util.LEFT_SOFT_KEYS
+import com.flipos.launcher.util.RIGHT_SOFT_KEYS
 
 /**
  * Pick-an-app dialog used when assigning a Home shortcut. Returns the chosen
@@ -89,8 +91,8 @@ class AppPickerActivity : BaseListActivity() {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         when (keyCode) {
-            KeyEvent.KEYCODE_SOFT_LEFT -> { finish(); return true }
-            KeyEvent.KEYCODE_SOFT_RIGHT -> { openActivities(focusedPosition()); return true }
+            in LEFT_SOFT_KEYS -> { finish(); return true }
+            in RIGHT_SOFT_KEYS -> { openActivities(focusedPosition()); return true }
         }
         return super.onKeyDown(keyCode, event)
     }

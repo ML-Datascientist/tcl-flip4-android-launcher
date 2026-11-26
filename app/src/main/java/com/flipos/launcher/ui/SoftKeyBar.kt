@@ -16,7 +16,9 @@ import com.flipos.launcher.R
  *
  * The labels are not focusable so they never steal D-pad focus from the content
  * above them; they respond to touch and to the hardware soft keys handled by
- * each Activity.
+ * each Activity. On the target phone the soft keys arrive as KEYCODE_F1 /
+ * KEYCODE_F2; [com.flipos.launcher.util.LEFT_SOFT_KEYS] and
+ * [com.flipos.launcher.util.RIGHT_SOFT_KEYS] are the canonical code sets.
  */
 class SoftKeyBar @JvmOverloads constructor(
     context: Context,

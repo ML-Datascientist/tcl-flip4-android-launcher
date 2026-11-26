@@ -17,6 +17,7 @@ import com.flipos.launcher.data.LauncherPrefs
 import com.flipos.launcher.ui.IconGridAdapter
 import com.flipos.launcher.ui.SoftKeyBar
 import com.flipos.launcher.util.BackgroundLoader
+import com.flipos.launcher.util.LEFT_SOFT_KEYS
 
 /**
  * Lets the user replace one app's icon with any icon from an installed icon
@@ -136,7 +137,7 @@ class IconPickerActivity : AppCompatActivity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_SOFT_LEFT) {
+        if (keyCode in LEFT_SOFT_KEYS) {
             finish()
             return true
         }

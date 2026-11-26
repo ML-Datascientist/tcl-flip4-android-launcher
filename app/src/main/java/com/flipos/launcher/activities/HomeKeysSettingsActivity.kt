@@ -12,6 +12,7 @@ import com.flipos.launcher.data.AppRepository
 import com.flipos.launcher.data.LauncherPrefs
 import com.flipos.launcher.ui.ListRowAdapter
 import com.flipos.launcher.ui.Row
+import com.flipos.launcher.util.LEFT_SOFT_KEYS
 
 /** Home screen key bindings and shortcut management. */
 class HomeKeysSettingsActivity : BaseListActivity() {
@@ -169,7 +170,7 @@ class HomeKeysSettingsActivity : BaseListActivity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_SOFT_LEFT) {
+        if (keyCode in LEFT_SOFT_KEYS) {
             finish()
             return true
         }
