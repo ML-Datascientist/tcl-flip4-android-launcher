@@ -1,3 +1,5 @@
+This is a fork of https://github.com/ambercaravalho/flip-launcher with soft buttons modified to work with TCL flip 4 5G. This app works only with android installed on the phone.
+
 # Flip Launcher — a KaiOS-style Android launcher
 
 A KaiOS-style Android launcher built for feature-phone-shaped devices (small,
